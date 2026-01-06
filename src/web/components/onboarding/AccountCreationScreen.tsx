@@ -7,6 +7,7 @@ interface AccountCreationScreenProps {
   updateSelections: (updates: Partial<UserSelections>) => void;
   onBack: () => void;
   currentScreen: number;
+  onComplete: () => void;
 }
 
 export default function AccountCreationScreen({
@@ -14,6 +15,7 @@ export default function AccountCreationScreen({
   updateSelections,
   onBack,
   currentScreen,
+  onComplete,
 }: AccountCreationScreenProps) {
   const [mounted, setMounted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -56,7 +58,7 @@ export default function AccountCreationScreen({
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsSubmitting(false);
-    alert("Account created! Welcome to your language learning journey! 🎉");
+    onComplete();
   };
 
   const handleSocialSignup = (provider: string) => {

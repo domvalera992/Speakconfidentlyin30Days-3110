@@ -5,6 +5,7 @@ import LevelAssessmentScreen from "../components/onboarding/LevelAssessmentScree
 import TimeCommitmentScreen from "../components/onboarding/TimeCommitmentScreen";
 import PersonalizedPromiseScreen from "../components/onboarding/PersonalizedPromiseScreen";
 import AccountCreationScreen from "../components/onboarding/AccountCreationScreen";
+import Dashboard from "../components/dashboard/Dashboard";
 
 export interface UserSelections {
   language: "english" | "spanish" | null;
@@ -31,6 +32,7 @@ const initialSelections: UserSelections = {
 function Index() {
   const [currentScreen, setCurrentScreen] = useState(1);
   const [selections, setSelections] = useState<UserSelections>(initialSelections);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   const updateSelections = (updates: Partial<UserSelections>) => {
     setSelections((prev) => ({ ...prev, ...updates }));
@@ -38,6 +40,18 @@ function Index() {
 
   const goNext = () => setCurrentScreen((prev) => Math.min(prev + 1, 6));
   const goBack = () => setCurrentScreen((prev) => Math.max(prev - 1, 1));
+
+  const handleOnboardingComplete = () => {
+    setOnboardingComplete(true);
+  };
+
+  if (onboardingComplete) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+        <Dashboard selections={selections} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
@@ -90,6 +104,7 @@ function Index() {
           updateSelections={updateSelections}
           onBack={goBack}
           currentScreen={currentScreen}
+          onComplete={handleOnboardingComplete}
         />
       )}
     </div>
