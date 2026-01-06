@@ -16,23 +16,23 @@ const TESTIMONIALS = [
   {
     name: "James K.",
     location: "London, UK",
-    quote: "The 30-day structure kept me accountable. Now I confidently order in Spanish restaurants!",
+    quote: "Having lifetime access means I can revisit lessons whenever I need. Now I confidently order in Spanish restaurants!",
     stars: 5,
   },
   {
     name: "Sofia R.",
     location: "Toronto, Canada",
-    quote: "Finally a program that focuses on speaking, not just grammar. Worth every penny.",
+    quote: "Finally a program that focuses on speaking, not just grammar. Worth every penny for lifetime access.",
     stars: 5,
   },
 ];
 
 const FEATURES = [
-  { icon: "📚", text: "Full 30-Day Curriculum", detail: "5 complete modules with 20+ lessons" },
+  { icon: "♾️", text: "Lifetime Access", detail: "Learn at your own pace—never expires" },
+  { icon: "📚", text: "Complete Curriculum", detail: "5 modules with 20+ lessons + all future updates" },
   { icon: "🎧", text: "250+ Audio Phrases", detail: "Native speaker recordings for perfect pronunciation" },
   { icon: "📝", text: "Complete Workbook", detail: "Translation, matching, and speaking exercises" },
   { icon: "🏆", text: "Achievement System", detail: "Track progress with XP, badges, and levels" },
-  { icon: "🔊", text: "Listen & Repeat Mode", detail: "Guided practice sessions for immersion" },
   { icon: "💬", text: "Real Conversations", detail: "Practice dialogues for real-life situations" },
 ];
 
@@ -111,14 +111,14 @@ export default function UpgradeScreen({ onPurchase, onClose, flashSale = false }
         {/* Main Headline */}
         <div className={`text-center mb-8 transition-all duration-700 delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 leading-tight">
-            30 Days to Confident
+            Lifetime Access to
             <br />
             <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-              Spanish Speaking
+              Language Mastery
             </span>
           </h1>
           <p className="text-white/60 text-lg">
-            Unlock your full transformation journey
+            One payment. Forever yours. Learn at your pace.
           </p>
         </div>
 
@@ -258,7 +258,7 @@ export default function UpgradeScreen({ onPurchase, onClose, flashSale = false }
           onClick={onPurchase}
           className={`w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg hover:opacity-90 transition-all duration-700 delay-700 hover:scale-[1.02] active:scale-[0.98] ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
-          Start My 30-Day Transformation
+          Get Lifetime Access Now
         </button>
       </div>
     </div>

@@ -24,8 +24,8 @@ export default function UpgradeBanner({ onUpgrade, compact = false }: UpgradeBan
             <span className="text-lg">⭐</span>
           </div>
           <div>
-            <p className="text-white font-bold text-sm">Unlock Full Access</p>
-            <p className="text-white/50 text-xs">Get all lessons, audio & workbooks</p>
+            <p className="text-white font-bold text-sm">Get Lifetime Access</p>
+            <p className="text-white/50 text-xs">All lessons, audio & workbooks—forever</p>
           </div>
         </div>
         <button

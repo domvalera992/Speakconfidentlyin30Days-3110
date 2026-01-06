@@ -102,7 +102,11 @@ export default function PaywallModal({ isOpen, onClose, onUpgrade, contentType =
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-emerald-400 text-sm">✓</span>
-                <span className="text-white/80 text-sm">Lifetime access</span>
+                <span className="text-white/80 text-sm">Lifetime access—never expires</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-400 text-sm">✓</span>
+                <span className="text-white/80 text-sm">All future updates included free</span>
               </div>
             </div>
           </div>
@@ -119,7 +123,7 @@ export default function PaywallModal({ isOpen, onClose, onUpgrade, contentType =
               <span className="text-white/70 text-xl">$</span>
               <span className="text-4xl font-bold text-white">34.99</span>
             </div>
-            <p className="text-white/40 text-sm mt-1">One-time payment</p>
+            <p className="text-white/40 text-sm mt-1">One-time payment • Forever yours</p>
           </div>
 
           {/* CTA */}
@@ -127,7 +131,7 @@ export default function PaywallModal({ isOpen, onClose, onUpgrade, contentType =
             onClick={onUpgrade}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-500/25 mb-3"
           >
-            Upgrade to Pro
+            Get Lifetime Access
           </button>
 
           <button

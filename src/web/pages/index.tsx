@@ -77,7 +77,7 @@ function Index() {
   const [purchaseReceipt, setPurchaseReceipt] = useState("");
   const [flashSale, setFlashSale] = useState(false);
 
-  const { isPro, completePurchase } = usePaymentContext();
+  const { isPro, isLiveMode, completePurchase, openExternalPayment } = usePaymentContext();
 
   const updateSelections = (updates: Partial<UserSelections>) => {
     setSelections((prev) => ({ ...prev, ...updates }));
@@ -123,12 +123,21 @@ function Index() {
   };
 
   const handleUpgradeClick = () => {
-    setPaymentFlow("upgrade");
-    setPaywallOpen(false);
+    if (isLiveMode) {
+      openExternalPayment();
+      setPaywallOpen(false);
+    } else {
+      setPaymentFlow("upgrade");
+      setPaywallOpen(false);
+    }
   };
 
   const handlePurchaseClick = () => {
-    setPaymentFlow("checkout");
+    if (isLiveMode) {
+      openExternalPayment();
+    } else {
+      setPaymentFlow("checkout");
+    }
   };
 
   const handleCheckoutComplete = async (email: string) => {

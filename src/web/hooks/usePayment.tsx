@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 
 const PAYMENT_STORAGE_KEY = "language_app_payment_status";
+const PAYMENT_CONFIG_KEY = "language_app_payment_config";
 
 interface PaymentStatus {
   isPro: boolean;
@@ -9,12 +10,22 @@ interface PaymentStatus {
   email: string | null;
 }
 
+interface PaymentConfig {
+  mode: "demo" | "live";
+  externalPaymentUrl: string;
+}
+
 interface PaymentContextType {
   paymentStatus: PaymentStatus;
+  paymentConfig: PaymentConfig;
   isPro: boolean;
+  isLiveMode: boolean;
   completePurchase: (email: string) => Promise<{ success: boolean; receiptNumber: string }>;
   clearPaymentStatus: () => void;
   toggleDemoMode: () => void;
+  setPaymentMode: (mode: "demo" | "live") => void;
+  setExternalPaymentUrl: (url: string) => void;
+  openExternalPayment: () => void;
 }
 
 const defaultPaymentStatus: PaymentStatus = {
@@ -22,6 +33,11 @@ const defaultPaymentStatus: PaymentStatus = {
   purchaseDate: null,
   receiptNumber: null,
   email: null,
+};
+
+const defaultPaymentConfig: PaymentConfig = {
+  mode: "demo",
+  externalPaymentUrl: "",
 };
 
 const getStoredPaymentStatus = (): PaymentStatus => {
@@ -38,9 +54,29 @@ const getStoredPaymentStatus = (): PaymentStatus => {
   return defaultPaymentStatus;
 };
 
+const getStoredPaymentConfig = (): PaymentConfig => {
+  if (typeof window === "undefined") return defaultPaymentConfig;
+  
+  try {
+    const stored = localStorage.getItem(PAYMENT_CONFIG_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error("Error loading payment config:", e);
+  }
+  return defaultPaymentConfig;
+};
+
 const savePaymentStatus = (status: PaymentStatus) => {
   if (typeof window !== "undefined") {
     localStorage.setItem(PAYMENT_STORAGE_KEY, JSON.stringify(status));
+  }
+};
+
+const savePaymentConfig = (config: PaymentConfig) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(PAYMENT_CONFIG_KEY, JSON.stringify(config));
   }
 };
 
@@ -52,14 +88,20 @@ const generateReceiptNumber = () => {
 
 export function usePayment(): PaymentContextType {
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(defaultPaymentStatus);
+  const [paymentConfig, setPaymentConfig] = useState<PaymentConfig>(defaultPaymentConfig);
 
   useEffect(() => {
     setPaymentStatus(getStoredPaymentStatus());
+    setPaymentConfig(getStoredPaymentConfig());
   }, []);
 
   useEffect(() => {
     savePaymentStatus(paymentStatus);
   }, [paymentStatus]);
+
+  useEffect(() => {
+    savePaymentConfig(paymentConfig);
+  }, [paymentConfig]);
 
   const completePurchase = async (email: string): Promise<{ success: boolean; receiptNumber: string }> => {
     // Simulate payment processing delay
@@ -95,12 +137,33 @@ export function usePayment(): PaymentContextType {
     }
   };
 
+  const setPaymentMode = (mode: "demo" | "live") => {
+    setPaymentConfig(prev => ({ ...prev, mode }));
+  };
+
+  const setExternalPaymentUrl = (url: string) => {
+    setPaymentConfig(prev => ({ ...prev, externalPaymentUrl: url }));
+  };
+
+  const openExternalPayment = () => {
+    if (paymentConfig.externalPaymentUrl) {
+      window.open(paymentConfig.externalPaymentUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const isLiveMode = paymentConfig.mode === "live" && paymentConfig.externalPaymentUrl.trim() !== "";
+
   return {
     paymentStatus,
+    paymentConfig,
     isPro: paymentStatus.isPro,
+    isLiveMode,
     completePurchase,
     clearPaymentStatus,
     toggleDemoMode,
+    setPaymentMode,
+    setExternalPaymentUrl,
+    openExternalPayment,
   };
 }
 

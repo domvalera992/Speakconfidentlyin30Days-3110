@@ -147,11 +147,11 @@ export default function PaymentSuccessScreen({ email, receiptNumber, onContinue 
             Welcome to
             <br />
             <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
-              Full Access!
+              Lifetime Access!
             </span>
           </h1>
           <p className="text-white/60 text-lg">
-            Your 30-day transformation journey starts now 🚀
+            Your learning journey begins—take all the time you need 🚀
           </p>
         </div>
 
@@ -218,6 +218,10 @@ export default function PaymentSuccessScreen({ email, receiptNumber, onContinue 
             <div className="flex items-center gap-2">
               <span className="text-emerald-400">✓</span>
               <span className="text-white/80 text-sm">All Achievements</span>
+            </div>
+            <div className="flex items-center gap-2 col-span-2 mt-2">
+              <span className="text-emerald-400">✓</span>
+              <span className="text-white/80 text-sm">All future updates included free</span>
             </div>
           </div>
         </div>

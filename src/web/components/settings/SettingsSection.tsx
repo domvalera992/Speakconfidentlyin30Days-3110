@@ -41,7 +41,7 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   
-  const { isPro, paymentStatus, toggleDemoMode } = usePaymentContext();
+  const { isPro, paymentStatus, paymentConfig, toggleDemoMode, setPaymentMode, setExternalPaymentUrl, isLiveMode } = usePaymentContext();
 
   useEffect(() => {
     setMounted(true);
@@ -205,7 +205,7 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
                 onClick={onUpgrade}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:opacity-90 transition-opacity"
               >
-                Upgrade to Pro • $34.99
+                Get Lifetime Access • $34.99
               </button>
             )}
           </div>
@@ -369,8 +369,77 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
           </div>
         </div>
 
+        {/* Payment Configuration Section */}
+        <div className={`bg-gradient-to-br from-indigo-500/10 to-blue-500/10 rounded-3xl border border-indigo-400/20 overflow-hidden mb-6 transition-all duration-700 delay-350 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">💳</span>
+              <h2 className="text-lg font-bold text-white">Payment Settings</h2>
+            </div>
+            <p className="text-white/50 text-sm mb-4">
+              Configure how purchases are handled in the app.
+            </p>
+            
+            <div className="space-y-4">
+              {/* Payment Mode Toggle */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white font-medium">Live Mode</p>
+                  <p className="text-white/40 text-xs mt-0.5">
+                    {isLiveMode ? "External payment link active" : "Using demo checkout"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setPaymentMode(paymentConfig.mode === "live" ? "demo" : "live")}
+                  className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
+                    paymentConfig.mode === "live" ? "bg-emerald-500" : "bg-white/20"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                      paymentConfig.mode === "live" ? "translate-x-6" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* External Payment URL */}
+              <div className="pt-4 border-t border-white/5">
+                <label className="block">
+                  <p className="text-white font-medium mb-1">External Payment Link</p>
+                  <p className="text-white/40 text-xs mb-3">
+                    Paste your Stripe Payment Link, Gumroad, or other checkout URL
+                  </p>
+                  <input
+                    type="url"
+                    value={paymentConfig.externalPaymentUrl}
+                    onChange={(e) => setExternalPaymentUrl(e.target.value)}
+                    placeholder="https://buy.stripe.com/..."
+                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-indigo-500/50 transition-colors font-mono text-sm"
+                  />
+                </label>
+                {paymentConfig.mode === "live" && !paymentConfig.externalPaymentUrl.trim() && (
+                  <p className="text-amber-400 text-xs mt-2 flex items-center gap-1">
+                    <span>⚠️</span> Add a payment link to enable live mode
+                  </p>
+                )}
+              </div>
+
+              {/* Status indicator */}
+              <div className="pt-4 border-t border-white/5">
+                <div className={`flex items-center gap-2 p-3 rounded-xl ${isLiveMode ? "bg-emerald-500/20 border border-emerald-400/30" : "bg-white/5 border border-white/10"}`}>
+                  <span className={`w-2 h-2 rounded-full ${isLiveMode ? "bg-emerald-400 animate-pulse" : "bg-white/40"}`} />
+                  <span className={`text-sm font-medium ${isLiveMode ? "text-emerald-300" : "text-white/60"}`}>
+                    {isLiveMode ? "Live: Purchases open external link" : "Demo: Simulated checkout flow"}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Demo Mode Section */}
-        <div className={`bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-3xl border border-purple-400/20 overflow-hidden mb-6 transition-all duration-700 delay-350 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <div className={`bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-3xl border border-purple-400/20 overflow-hidden mb-6 transition-all duration-700 delay-400 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="p-5">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-xl">🧪</span>

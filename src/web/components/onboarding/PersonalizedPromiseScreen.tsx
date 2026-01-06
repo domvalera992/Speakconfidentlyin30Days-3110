@@ -113,10 +113,10 @@ export default function PersonalizedPromiseScreen({
         <div className={`text-center mb-8 transition-all duration-700 delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <p className="text-emerald-400 font-medium mb-2">Based on your goals</p>
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Here's your 30-day roadmap
+            Your personalized learning path
           </h1>
           <p className="text-white/60">
-            to speaking <span className="text-white font-semibold">{languageLabel}</span> with confidence
+            to <span className="text-white font-semibold">{languageLabel}</span> mastery—at your own pace, forever
           </p>
         </div>
 
@@ -192,7 +192,7 @@ export default function PersonalizedPromiseScreen({
             onClick={onNext}
             className="w-full py-5 px-8 rounded-2xl font-bold text-lg bg-gradient-to-r from-emerald-500 via-emerald-400 to-cyan-500 text-white shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
           >
-            Start My Transformation ✨
+            Get Lifetime Access – $34.99 ✨
           </button>
           
           {onUpgrade && (
@@ -201,7 +201,7 @@ export default function PersonalizedPromiseScreen({
               className="w-full py-4 px-8 rounded-2xl font-bold text-base bg-white/5 border border-white/20 text-white hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2"
             >
               <span>🔓</span>
-              <span>Unlock Full 30-Day Access</span>
+              <span>Unlock Full Access Forever</span>
               <span className="text-emerald-400 text-sm">$34.99</span>
             </button>
           )}

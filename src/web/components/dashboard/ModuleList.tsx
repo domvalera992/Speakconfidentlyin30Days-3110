@@ -93,7 +93,7 @@ const modules: Module[] = [
     icon: "⭐",
     unlocked: false,
     color: "amber",
-    unlockRequirement: "Complete the 30-day program to unlock",
+    unlockRequirement: "Complete all modules to unlock",
     lessons: [
       { id: "5.1", title: "Phone Calls", completed: false, type: "lesson" },
       { id: "5.2", title: "Workplace Basics", completed: false, type: "lesson" },

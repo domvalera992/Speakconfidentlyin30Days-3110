@@ -34,14 +34,14 @@ export default function WelcomeScreen({ onSelectLanguage }: WelcomeScreenProps) 
         {/* Tagline */}
         <h1 className="font-display text-4xl md:text-6xl font-bold tracking-tight mb-4">
           <span className="bg-gradient-to-r from-white via-emerald-200 to-cyan-200 bg-clip-text text-transparent">
-            Speak Confidently
+            Master a New Language
           </span>
           <br />
-          <span className="text-white/90">in 30 Days</span>
+          <span className="text-white/90">For Life</span>
         </h1>
 
         <p className="text-lg text-white/60 max-w-md mb-12">
-          Join thousands who've transformed their language skills with our proven method
+          Lifetime access to our proven method—learn at your own pace, forever
         </p>
 
         {/* Animated illustration of diverse people talking */}
