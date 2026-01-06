@@ -1,72 +1,99 @@
-// TODO(agent): This is a temporary "under construction" page.
-// Replace the entire contents of this file with the actual index page implementation
-// as instructed by the user. Delete this comment and the placeholder UI below.
+import { useState } from "react";
+import WelcomeScreen from "../components/onboarding/WelcomeScreen";
+import GoalSelectionScreen from "../components/onboarding/GoalSelectionScreen";
+import LevelAssessmentScreen from "../components/onboarding/LevelAssessmentScreen";
+import TimeCommitmentScreen from "../components/onboarding/TimeCommitmentScreen";
+import PersonalizedPromiseScreen from "../components/onboarding/PersonalizedPromiseScreen";
+import AccountCreationScreen from "../components/onboarding/AccountCreationScreen";
 
-import { useState, useEffect } from "react";
+export interface UserSelections {
+  language: "english" | "spanish" | null;
+  goals: string[];
+  level: string | null;
+  dailyTime: string | null;
+  name: string;
+  email: string;
+  password: string;
+  receiveMotivation: boolean;
+}
 
-const AGENT_THOUGHTS = [
-	"Crafting the perfect landing page",
-	"Fine-tuning the color palette",
-	"Making buttons actually clickable",
-	"Ensuring it works on your phone too",
-	"Adding just the right amount of whitespace",
-	"Teaching forms to be polite",
-	"Making the logo pixel-perfect",
-	"Optimizing for speed (patience, ironic)",
-	"Writing code that future-me won't hate",
-	"Building something worth the wait",
-];
+const initialSelections: UserSelections = {
+  language: null,
+  goals: [],
+  level: null,
+  dailyTime: null,
+  name: "",
+  email: "",
+  password: "",
+  receiveMotivation: false,
+};
 
 function Index() {
-	const [thoughtIndex, setThoughtIndex] = useState(0);
+  const [currentScreen, setCurrentScreen] = useState(1);
+  const [selections, setSelections] = useState<UserSelections>(initialSelections);
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setThoughtIndex((prev) => (prev + 1) % AGENT_THOUGHTS.length);
-		}, 3000);
-		return () => clearInterval(interval);
-	}, []);
+  const updateSelections = (updates: Partial<UserSelections>) => {
+    setSelections((prev) => ({ ...prev, ...updates }));
+  };
 
-	return (
-		<div className="min-h-screen bg-[#f5f5f5] flex flex-col items-center justify-center p-8">
+  const goNext = () => setCurrentScreen((prev) => Math.min(prev + 1, 6));
+  const goBack = () => setCurrentScreen((prev) => Math.max(prev - 1, 1));
 
-			<h1 className="text-[clamp(2.5rem,10vw,6rem)] font-black tracking-[-0.03em] text-black leading-none mb-10 text-center">
-				Under
-				<br />
-				Construction
-			</h1>
-
-			{/* Agent thought with shimmer */}
-			<div className="h-8 flex items-center justify-center">
-				<p className="text-base md:text-lg shimmer-text italic">
-					"{AGENT_THOUGHTS[thoughtIndex]}"
-				</p>
-			</div>
-
-			<style>{`
-				.shimmer-text {
-					background: linear-gradient(
-						90deg,
-						#737373 0%,
-						#737373 40%,
-						#d4d4d4 50%,
-						#737373 60%,
-						#737373 100%
-					);
-					background-size: 200% 100%;
-					-webkit-background-clip: text;
-					background-clip: text;
-					-webkit-text-fill-color: transparent;
-					animation: shimmer 2s ease-in-out infinite;
-				}
-
-				@keyframes shimmer {
-					0% { background-position: 100% 0; }
-					100% { background-position: -100% 0; }
-				}
-			`}</style>
-		</div>
-	);
+  return (
+    <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+      {currentScreen === 1 && (
+        <WelcomeScreen
+          onSelectLanguage={(lang) => {
+            updateSelections({ language: lang });
+            goNext();
+          }}
+        />
+      )}
+      {currentScreen === 2 && (
+        <GoalSelectionScreen
+          selections={selections}
+          updateSelections={updateSelections}
+          onNext={goNext}
+          onBack={goBack}
+          currentScreen={currentScreen}
+        />
+      )}
+      {currentScreen === 3 && (
+        <LevelAssessmentScreen
+          selections={selections}
+          updateSelections={updateSelections}
+          onNext={goNext}
+          onBack={goBack}
+          currentScreen={currentScreen}
+        />
+      )}
+      {currentScreen === 4 && (
+        <TimeCommitmentScreen
+          selections={selections}
+          updateSelections={updateSelections}
+          onNext={goNext}
+          onBack={goBack}
+          currentScreen={currentScreen}
+        />
+      )}
+      {currentScreen === 5 && (
+        <PersonalizedPromiseScreen
+          selections={selections}
+          onNext={goNext}
+          onBack={goBack}
+          currentScreen={currentScreen}
+        />
+      )}
+      {currentScreen === 6 && (
+        <AccountCreationScreen
+          selections={selections}
+          updateSelections={updateSelections}
+          onBack={goBack}
+          currentScreen={currentScreen}
+        />
+      )}
+    </div>
+  );
 }
 
 export default Index;
