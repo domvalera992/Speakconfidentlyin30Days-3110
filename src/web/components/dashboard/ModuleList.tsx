@@ -103,11 +103,18 @@ const modules: Module[] = [
   },
 ];
 
-interface ModuleListProps {
-  onLessonClick?: (lesson: Lesson, moduleId: number) => void;
+interface ModuleForCallback {
+  id: number;
+  title: string;
+  color: string;
 }
 
-export default function ModuleList({ onLessonClick }: ModuleListProps) {
+interface ModuleListProps {
+  onLessonClick?: (lesson: Lesson, moduleId: number) => void;
+  onLessonOpen?: (lesson: Lesson, module: ModuleForCallback) => void;
+}
+
+export default function ModuleList({ onLessonClick, onLessonOpen }: ModuleListProps) {
   const [mounted, setMounted] = useState(false);
   const [expandedModule, setExpandedModule] = useState<number | null>(1);
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
@@ -173,9 +180,10 @@ export default function ModuleList({ onLessonClick }: ModuleListProps) {
     }
   };
 
-  const handleLessonClick = (lesson: Lesson, moduleId: number) => {
-    setSelectedLesson({ lesson, moduleId });
-    onLessonClick?.(lesson, moduleId);
+  const handleLessonClick = (lesson: Lesson, module: Module) => {
+    setSelectedLesson({ lesson, moduleId: module.id });
+    onLessonClick?.(lesson, module.id);
+    onLessonOpen?.(lesson, { id: module.id, title: module.title, color: module.color });
   };
 
   return (
@@ -266,7 +274,7 @@ export default function ModuleList({ onLessonClick }: ModuleListProps) {
                 {module.lessons.map((lesson, lessonIdx) => (
                   <button
                     key={lesson.id}
-                    onClick={() => handleLessonClick(lesson, module.id)}
+                    onClick={() => handleLessonClick(lesson, module)}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
                       lesson.current
                         ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 shadow-lg shadow-amber-500/10"

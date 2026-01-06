@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import type { UserSelections } from "../../pages";
+import type { UserSelections, Lesson, Module } from "../../pages";
 import ModuleList from "./ModuleList";
 import BottomNav from "./BottomNav";
 
 interface DashboardProps {
   selections: UserSelections;
+  onLessonOpen?: (lesson: Lesson, module: Module) => void;
 }
 
-export default function Dashboard({ selections }: DashboardProps) {
+export default function Dashboard({ selections, onLessonOpen }: DashboardProps) {
   const [mounted, setMounted] = useState(false);
   
   // Mock progress data
@@ -168,7 +169,7 @@ export default function Dashboard({ selections }: DashboardProps) {
 
           {/* Course Modules */}
           <div className={`mt-8 transition-all duration-700 delay-400 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-            <ModuleList />
+            <ModuleList onLessonOpen={onLessonOpen} />
           </div>
         </div>
       </div>

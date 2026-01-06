@@ -6,6 +6,7 @@ import TimeCommitmentScreen from "../components/onboarding/TimeCommitmentScreen"
 import PersonalizedPromiseScreen from "../components/onboarding/PersonalizedPromiseScreen";
 import AccountCreationScreen from "../components/onboarding/AccountCreationScreen";
 import Dashboard from "../components/dashboard/Dashboard";
+import LessonPage from "../components/lesson/LessonPage";
 
 export interface UserSelections {
   language: "english" | "spanish" | null;
@@ -16,6 +17,25 @@ export interface UserSelections {
   email: string;
   password: string;
   receiveMotivation: boolean;
+}
+
+export interface Lesson {
+  id: string;
+  title: string;
+  completed: boolean;
+  current?: boolean;
+  type: "lesson" | "quiz";
+}
+
+export interface Module {
+  id: number;
+  title: string;
+  color: string;
+}
+
+interface ActiveLesson {
+  lesson: Lesson;
+  module: Module;
 }
 
 const initialSelections: UserSelections = {
@@ -33,6 +53,7 @@ function Index() {
   const [currentScreen, setCurrentScreen] = useState(1);
   const [selections, setSelections] = useState<UserSelections>(initialSelections);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [activeLesson, setActiveLesson] = useState<ActiveLesson | null>(null);
 
   const updateSelections = (updates: Partial<UserSelections>) => {
     setSelections((prev) => ({ ...prev, ...updates }));
@@ -45,10 +66,38 @@ function Index() {
     setOnboardingComplete(true);
   };
 
+  const handleLessonOpen = (lesson: Lesson, module: Module) => {
+    setActiveLesson({ lesson, module });
+  };
+
+  const handleLessonClose = () => {
+    setActiveLesson(null);
+  };
+
+  const handleLessonComplete = () => {
+    // Mark lesson as complete (in a real app, this would update state/backend)
+    console.log(`Lesson ${activeLesson?.lesson.id} completed!`);
+  };
+
   if (onboardingComplete) {
+    // Show lesson page if a lesson is active
+    if (activeLesson) {
+      return (
+        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+          <LessonPage
+            lesson={activeLesson.lesson}
+            module={activeLesson.module}
+            onBack={handleLessonClose}
+            onComplete={handleLessonComplete}
+          />
+        </div>
+      );
+    }
+
+    // Show dashboard
     return (
       <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-        <Dashboard selections={selections} />
+        <Dashboard selections={selections} onLessonOpen={handleLessonOpen} />
       </div>
     );
   }
