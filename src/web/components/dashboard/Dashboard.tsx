@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import type { UserSelections, Lesson, Module } from "../../pages";
 import ModuleList from "./ModuleList";
-import BottomNav from "./BottomNav";
+import BottomNav, { type TabId } from "./BottomNav";
 
 interface DashboardProps {
   selections: UserSelections;
   onLessonOpen?: (lesson: Lesson, module: Module) => void;
+  activeTab?: TabId;
+  onTabChange?: (tab: TabId) => void;
 }
 
-export default function Dashboard({ selections, onLessonOpen }: DashboardProps) {
+export default function Dashboard({ selections, onLessonOpen, activeTab = "home", onTabChange }: DashboardProps) {
   const [mounted, setMounted] = useState(false);
   
   // Mock progress data
@@ -175,7 +177,7 @@ export default function Dashboard({ selections, onLessonOpen }: DashboardProps) 
       </div>
 
       {/* Bottom Navigation */}
-      <BottomNav />
+      <BottomNav activeTab={activeTab} onTabChange={onTabChange} />
     </div>
   );
 }

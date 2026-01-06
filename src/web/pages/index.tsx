@@ -7,6 +7,8 @@ import PersonalizedPromiseScreen from "../components/onboarding/PersonalizedProm
 import AccountCreationScreen from "../components/onboarding/AccountCreationScreen";
 import Dashboard from "../components/dashboard/Dashboard";
 import LessonPage from "../components/lesson/LessonPage";
+import AudioPractice from "../components/audio/AudioPractice";
+import BottomNav, { type TabId } from "../components/dashboard/BottomNav";
 
 export interface UserSelections {
   language: "english" | "spanish" | null;
@@ -54,6 +56,7 @@ function Index() {
   const [selections, setSelections] = useState<UserSelections>(initialSelections);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [activeLesson, setActiveLesson] = useState<ActiveLesson | null>(null);
+  const [activeTab, setActiveTab] = useState<TabId>("home");
 
   const updateSelections = (updates: Partial<UserSelections>) => {
     setSelections((prev) => ({ ...prev, ...updates }));
@@ -79,6 +82,14 @@ function Index() {
     console.log(`Lesson ${activeLesson?.lesson.id} completed!`);
   };
 
+  const handleTabChange = (tab: TabId) => {
+    setActiveTab(tab);
+    // Clear active lesson when switching tabs
+    if (activeLesson) {
+      setActiveLesson(null);
+    }
+  };
+
   if (onboardingComplete) {
     // Show lesson page if a lesson is active
     if (activeLesson) {
@@ -94,10 +105,25 @@ function Index() {
       );
     }
 
-    // Show dashboard
+    // Show Audio Practice section
+    if (activeTab === "audio") {
+      return (
+        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+          <AudioPractice />
+          <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+        </div>
+      );
+    }
+
+    // Show dashboard (home tab and others for now)
     return (
       <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-        <Dashboard selections={selections} onLessonOpen={handleLessonOpen} />
+        <Dashboard 
+          selections={selections} 
+          onLessonOpen={handleLessonOpen} 
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 
 type TabId = "home" | "lessons" | "audio" | "workbook" | "progress" | "settings";
 
@@ -22,13 +22,14 @@ interface BottomNavProps {
   onTabChange?: (tab: TabId) => void;
 }
 
-export default function BottomNav({ activeTab = "home", onTabChange }: BottomNavProps) {
-  const [currentTab, setCurrentTab] = useState<TabId>(activeTab);
+export type { TabId };
 
+export default function BottomNav({ activeTab = "home", onTabChange }: BottomNavProps) {
   const handleTabClick = (tabId: TabId) => {
-    setCurrentTab(tabId);
     onTabChange?.(tabId);
   };
+
+  const currentTab = activeTab;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0a0f]/95 backdrop-blur-lg border-t border-white/10">
