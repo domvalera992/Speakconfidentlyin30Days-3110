@@ -9,6 +9,8 @@ import Dashboard from "../components/dashboard/Dashboard";
 import LessonPage from "../components/lesson/LessonPage";
 import AudioPractice from "../components/audio/AudioPractice";
 import Workbook from "../components/workbook/Workbook";
+import ProgressSection from "../components/progress/ProgressSection";
+import SettingsSection from "../components/settings/SettingsSection";
 import BottomNav, { type TabId } from "../components/dashboard/BottomNav";
 
 export interface UserSelections {
@@ -121,6 +123,26 @@ function Index() {
       return (
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
           <Workbook />
+          <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+        </div>
+      );
+    }
+
+    // Show Progress/Achievements section
+    if (activeTab === "progress") {
+      return (
+        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+          <ProgressSection />
+          <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+        </div>
+      );
+    }
+
+    // Show Settings section
+    if (activeTab === "settings") {
+      return (
+        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+          <SettingsSection />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
       );

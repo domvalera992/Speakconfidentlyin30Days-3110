@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { UserSelections, Lesson, Module } from "../../pages";
 import ModuleList from "./ModuleList";
 import BottomNav, { type TabId } from "./BottomNav";
+import { DailyQuote } from "../quotes/MotivationalQuotes";
 
 interface DashboardProps {
   selections: UserSelections;
@@ -159,8 +160,13 @@ export default function Dashboard({ selections, onLessonOpen, activeTab = "home"
             </div>
           </div>
 
-          {/* Continue Learning CTA */}
+          {/* Daily Quote */}
           <div className={`transition-all duration-700 delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <DailyQuote />
+          </div>
+
+          {/* Continue Learning CTA */}
+          <div className={`mt-4 transition-all duration-700 delay-350 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
             <button className="w-full py-4 px-6 rounded-2xl font-bold text-lg bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-3">
               <span>Continue Learning</span>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

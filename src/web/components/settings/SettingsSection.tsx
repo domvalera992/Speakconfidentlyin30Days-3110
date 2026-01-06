@@ -1,0 +1,336 @@
+import { useState, useEffect } from "react";
+
+interface ReminderSettings {
+  enabled: boolean;
+  time: string;
+  streakWarning: boolean;
+  motivationalMessages: boolean;
+}
+
+const DEFAULT_SETTINGS: ReminderSettings = {
+  enabled: true,
+  time: "09:00",
+  streakWarning: true,
+  motivationalMessages: true,
+};
+
+const TIME_OPTIONS = [
+  { value: "06:00", label: "6:00 AM" },
+  { value: "07:00", label: "7:00 AM" },
+  { value: "08:00", label: "8:00 AM" },
+  { value: "09:00", label: "9:00 AM" },
+  { value: "10:00", label: "10:00 AM" },
+  { value: "12:00", label: "12:00 PM" },
+  { value: "18:00", label: "6:00 PM" },
+  { value: "19:00", label: "7:00 PM" },
+  { value: "20:00", label: "8:00 PM" },
+  { value: "21:00", label: "9:00 PM" },
+];
+
+export default function SettingsSection() {
+  const [mounted, setMounted] = useState(false);
+  const [settings, setSettings] = useState<ReminderSettings>(DEFAULT_SETTINGS);
+  const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | "unsupported">("default");
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    
+    // Check notification permission
+    if ("Notification" in window) {
+      setPermissionStatus(Notification.permission);
+    } else {
+      setPermissionStatus("unsupported");
+    }
+  }, []);
+
+  const requestNotificationPermission = async () => {
+    if (!("Notification" in window)) {
+      alert("This browser does not support notifications");
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    setPermissionStatus(permission);
+    
+    if (permission === "granted") {
+      setShowPermissionModal(false);
+      new Notification("Daily Reminders Enabled! 🎉", {
+        body: "You'll receive your daily learning reminders at your chosen time.",
+        icon: "🗣️",
+      });
+    }
+  };
+
+  const updateSettings = (updates: Partial<ReminderSettings>) => {
+    setSettings((prev) => ({ ...prev, ...updates }));
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+  };
+
+  const toggleReminders = () => {
+    if (!settings.enabled && permissionStatus !== "granted") {
+      setShowPermissionModal(true);
+    } else {
+      updateSettings({ enabled: !settings.enabled });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0f] text-white pb-24">
+      {/* Permission Request Modal */}
+      {showPermissionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#0f0f15] rounded-3xl p-6 max-w-sm w-full border border-white/10">
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-4">
+                <span className="text-4xl">🔔</span>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Enable Notifications</h3>
+              <p className="text-white/60 text-sm mb-6">
+                Get daily reminders to keep your streak alive and stay motivated on your language learning journey!
+              </p>
+              <div className="space-y-3">
+                <button
+                  onClick={requestNotificationPermission}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold hover:opacity-90 transition-opacity"
+                >
+                  Allow Notifications
+                </button>
+                <button
+                  onClick={() => setShowPermissionModal(false)}
+                  className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 font-medium transition-colors"
+                >
+                  Maybe Later
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Toast */}
+      {showSuccess && (
+        <div className="fixed top-4 right-4 z-50 bg-emerald-500 text-white px-4 py-3 rounded-xl shadow-xl animate-pulse">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="font-medium">Settings saved!</span>
+          </div>
+        </div>
+      )}
+
+      {/* Background gradients */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-slate-500/8 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-0 w-80 h-80 bg-indigo-500/8 rounded-full blur-3xl" />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 px-5 py-6 max-w-lg mx-auto">
+        {/* Header */}
+        <div className={`mb-6 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">
+            ⚙️ Settings
+          </h1>
+          <p className="text-white/50 text-sm mt-1">Customize your learning experience</p>
+        </div>
+
+        {/* Daily Reminders Section */}
+        <div className={`bg-white/5 rounded-3xl border border-white/10 overflow-hidden mb-6 transition-all duration-700 delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="p-5 border-b border-white/5">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <span>🔔</span> Daily Reminders
+            </h2>
+            <p className="text-white/50 text-sm mt-1">
+              Get notified to keep your streak alive
+            </p>
+          </div>
+
+          <div className="p-5 space-y-4">
+            {/* Enable Reminders Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-white font-medium">Enable reminders</p>
+                <p className="text-white/40 text-xs mt-0.5">
+                  {permissionStatus === "granted" 
+                    ? "Notifications enabled" 
+                    : permissionStatus === "denied"
+                      ? "Notifications blocked"
+                      : "Permission required"}
+                </p>
+              </div>
+              <button
+                onClick={toggleReminders}
+                className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
+                  settings.enabled ? "bg-emerald-500" : "bg-white/20"
+                }`}
+              >
+                <div
+                  className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                    settings.enabled ? "translate-x-6" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Reminder Time */}
+            {settings.enabled && (
+              <>
+                <div className="pt-4 border-t border-white/5">
+                  <p className="text-white font-medium mb-2">Reminder time</p>
+                  <select
+                    value={settings.time}
+                    onChange={(e) => updateSettings({ time: e.target.value })}
+                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500/50 transition-colors"
+                  >
+                    {TIME_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value} className="bg-[#0a0a0f]">
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Streak Warning */}
+                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                  <div>
+                    <p className="text-white font-medium">Streak warning</p>
+                    <p className="text-white/40 text-xs mt-0.5">
+                      Extra reminder if you haven't practiced by evening
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => updateSettings({ streakWarning: !settings.streakWarning })}
+                    className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
+                      settings.streakWarning ? "bg-orange-500" : "bg-white/20"
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                        settings.streakWarning ? "translate-x-6" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Motivational Messages */}
+                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                  <div>
+                    <p className="text-white font-medium">Motivational messages</p>
+                    <p className="text-white/40 text-xs mt-0.5">
+                      Inspirational quotes with your reminders
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => updateSettings({ motivationalMessages: !settings.motivationalMessages })}
+                    className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
+                      settings.motivationalMessages ? "bg-purple-500" : "bg-white/20"
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                        settings.motivationalMessages ? "translate-x-6" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Preview Notification */}
+        {settings.enabled && permissionStatus === "granted" && (
+          <div className={`bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-2xl p-4 border border-amber-400/30 mb-6 transition-all duration-700 delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-xl">📱</span>
+              </div>
+              <div>
+                <p className="text-white/80 text-xs uppercase tracking-wider mb-1">Preview</p>
+                <p className="text-white font-bold text-sm">Time to learn! 🗣️</p>
+                <p className="text-white/70 text-xs mt-1">
+                  🔥 7 day streak! Don't break it now. Just 5 minutes of practice keeps your momentum going.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Account Section */}
+        <div className={`bg-white/5 rounded-3xl border border-white/10 overflow-hidden mb-6 transition-all duration-700 delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="p-5 border-b border-white/5">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <span>👤</span> Account
+            </h2>
+          </div>
+
+          <div className="divide-y divide-white/5">
+            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+              <span className="text-white/80">Edit Profile</span>
+              <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+              <span className="text-white/80">Learning Language</span>
+              <div className="flex items-center gap-2">
+                <span className="text-white/40 text-sm">Spanish</span>
+                <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </button>
+            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+              <span className="text-white/80">Daily Goal</span>
+              <div className="flex items-center gap-2">
+                <span className="text-white/40 text-sm">10 min</span>
+                <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {/* Support Section */}
+        <div className={`bg-white/5 rounded-3xl border border-white/10 overflow-hidden transition-all duration-700 delay-400 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="p-5 border-b border-white/5">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <span>💬</span> Support
+            </h2>
+          </div>
+
+          <div className="divide-y divide-white/5">
+            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+              <span className="text-white/80">Help Center</span>
+              <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+              <span className="text-white/80">Contact Us</span>
+              <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+              <span className="text-white/80">Privacy Policy</span>
+              <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Version */}
+        <p className={`text-center text-white/30 text-sm mt-8 transition-all duration-700 delay-500 ${mounted ? "opacity-100" : "opacity-0"}`}>
+          Version 1.0.0
+        </p>
+      </div>
+    </div>
+  );
+}
