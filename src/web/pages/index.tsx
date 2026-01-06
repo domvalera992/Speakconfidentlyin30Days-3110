@@ -8,6 +8,7 @@ import AccountCreationScreen from "../components/onboarding/AccountCreationScree
 import Dashboard from "../components/dashboard/Dashboard";
 import LessonPage from "../components/lesson/LessonPage";
 import AudioPractice from "../components/audio/AudioPractice";
+import Workbook from "../components/workbook/Workbook";
 import BottomNav, { type TabId } from "../components/dashboard/BottomNav";
 
 export interface UserSelections {
@@ -110,6 +111,16 @@ function Index() {
       return (
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
           <AudioPractice />
+          <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+        </div>
+      );
+    }
+
+    // Show Workbook section
+    if (activeTab === "workbook") {
+      return (
+        <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+          <Workbook />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
       );
