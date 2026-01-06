@@ -9,9 +9,10 @@ interface DashboardProps {
   onLessonOpen?: (lesson: Lesson, module: Module) => void;
   activeTab?: TabId;
   onTabChange?: (tab: TabId) => void;
+  isPro?: boolean;
 }
 
-export default function Dashboard({ selections, onLessonOpen, activeTab = "home", onTabChange }: DashboardProps) {
+export default function Dashboard({ selections, onLessonOpen, activeTab = "home", onTabChange, isPro = false }: DashboardProps) {
   const [mounted, setMounted] = useState(false);
   
   // Mock progress data

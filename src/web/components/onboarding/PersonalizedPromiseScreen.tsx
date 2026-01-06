@@ -7,6 +7,7 @@ interface PersonalizedPromiseScreenProps {
   onNext: () => void;
   onBack: () => void;
   currentScreen: number;
+  onUpgrade?: () => void;
 }
 
 const goalLabels: Record<string, string> = {
@@ -37,6 +38,7 @@ export default function PersonalizedPromiseScreen({
   onNext,
   onBack,
   currentScreen,
+  onUpgrade,
 }: PersonalizedPromiseScreenProps) {
   const [mounted, setMounted] = useState(false);
   const [showRoadmap, setShowRoadmap] = useState(false);
@@ -184,14 +186,26 @@ export default function PersonalizedPromiseScreen({
           </div>
         </div>
 
-        {/* CTA Button */}
-        <button
-          onClick={onNext}
-          className={`w-full max-w-md py-5 px-8 rounded-2xl font-bold text-lg bg-gradient-to-r from-emerald-500 via-emerald-400 to-cyan-500 text-white shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ${showRoadmap ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
-          style={{ transitionDelay: "600ms" }}
-        >
-          Start My Transformation ✨
-        </button>
+        {/* CTA Buttons */}
+        <div className={`w-full max-w-md space-y-4 ${showRoadmap ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`} style={{ transitionDelay: "600ms" }}>
+          <button
+            onClick={onNext}
+            className="w-full py-5 px-8 rounded-2xl font-bold text-lg bg-gradient-to-r from-emerald-500 via-emerald-400 to-cyan-500 text-white shadow-xl shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+          >
+            Start My Transformation ✨
+          </button>
+          
+          {onUpgrade && (
+            <button
+              onClick={onUpgrade}
+              className="w-full py-4 px-8 rounded-2xl font-bold text-base bg-white/5 border border-white/20 text-white hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <span>🔓</span>
+              <span>Unlock Full 30-Day Access</span>
+              <span className="text-emerald-400 text-sm">$34.99</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <style>{`

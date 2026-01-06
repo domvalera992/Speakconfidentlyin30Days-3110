@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
+import { usePaymentContext } from "../../hooks/usePayment.js";
 
 interface ReminderSettings {
   enabled: boolean;
   time: string;
   streakWarning: boolean;
   motivationalMessages: boolean;
+}
+
+interface SettingsSectionProps {
+  onUpgrade?: () => void;
+  flashSale?: boolean;
+  onToggleFlashSale?: () => void;
 }
 
 const DEFAULT_SETTINGS: ReminderSettings = {
@@ -27,12 +34,14 @@ const TIME_OPTIONS = [
   { value: "21:00", label: "9:00 PM" },
 ];
 
-export default function SettingsSection() {
+export default function SettingsSection({ onUpgrade, flashSale = false, onToggleFlashSale }: SettingsSectionProps) {
   const [mounted, setMounted] = useState(false);
   const [settings, setSettings] = useState<ReminderSettings>(DEFAULT_SETTINGS);
   const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | "unsupported">("default");
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  const { isPro, paymentStatus, toggleDemoMode } = usePaymentContext();
 
   useEffect(() => {
     setMounted(true);
@@ -75,6 +84,15 @@ export default function SettingsSection() {
     } else {
       updateSettings({ enabled: !settings.enabled });
     }
+  };
+
+  const formatDate = (dateStr: string | null) => {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   return (
@@ -136,6 +154,61 @@ export default function SettingsSection() {
             ⚙️ Settings
           </h1>
           <p className="text-white/50 text-sm mt-1">Customize your learning experience</p>
+        </div>
+
+        {/* Account Status Section */}
+        <div className={`bg-gradient-to-br ${isPro ? "from-emerald-500/20 to-teal-500/20 border-emerald-400/30" : "from-white/5 to-white/5 border-white/10"} rounded-3xl border overflow-hidden mb-6 transition-all duration-700 delay-50 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className={`w-12 h-12 rounded-xl ${isPro ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-white/10"} flex items-center justify-center`}>
+                  <span className="text-2xl">{isPro ? "⭐" : "👤"}</span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-white">Account Status</h2>
+                    {isPro && (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-xs font-bold">
+                        PRO
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-white/50 text-sm">
+                    {isPro ? "Full access unlocked" : "Free account"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {isPro ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-white/60 text-sm">Purchase Date</span>
+                  <span className="text-white text-sm">{formatDate(paymentStatus.purchaseDate)}</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-white/60 text-sm">Receipt Number</span>
+                  <span className="text-white text-sm font-mono">{paymentStatus.receiptNumber}</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-white/60 text-sm">Access</span>
+                  <span className="text-emerald-400 text-sm font-medium">Lifetime</span>
+                </div>
+                <div className="pt-3 border-t border-white/10">
+                  <p className="text-white/40 text-xs">
+                    Need help? Contact us at support@speakconfidently.app
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={onUpgrade}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:opacity-90 transition-opacity"
+              >
+                Upgrade to Pro • $34.99
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Daily Reminders Section */}
@@ -293,6 +366,65 @@ export default function SettingsSection() {
                 </svg>
               </div>
             </button>
+          </div>
+        </div>
+
+        {/* Demo Mode Section */}
+        <div className={`bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-3xl border border-purple-400/20 overflow-hidden mb-6 transition-all duration-700 delay-350 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">🧪</span>
+              <h2 className="text-lg font-bold text-white">Demo Controls</h2>
+            </div>
+            <p className="text-white/50 text-sm mb-4">
+              Toggle between free and paid user views for testing purposes.
+            </p>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white font-medium">Pro Mode</p>
+                  <p className="text-white/40 text-xs mt-0.5">
+                    Switch between free and paid views
+                  </p>
+                </div>
+                <button
+                  onClick={toggleDemoMode}
+                  className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
+                    isPro ? "bg-emerald-500" : "bg-white/20"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                      isPro ? "translate-x-6" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {onToggleFlashSale && (
+                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                  <div>
+                    <p className="text-white font-medium">Flash Sale Mode</p>
+                    <p className="text-white/40 text-xs mt-0.5">
+                      Show countdown timer and bonuses
+                    </p>
+                  </div>
+                  <button
+                    onClick={onToggleFlashSale}
+                    className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
+                      flashSale ? "bg-orange-500" : "bg-white/20"
+                    }`}
+                  >
+                    <div
+                      className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                        flashSale ? "translate-x-6" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

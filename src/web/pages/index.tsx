@@ -12,6 +12,12 @@ import Workbook from "../components/workbook/Workbook";
 import ProgressSection from "../components/progress/ProgressSection";
 import SettingsSection from "../components/settings/SettingsSection";
 import BottomNav, { type TabId } from "../components/dashboard/BottomNav";
+import UpgradeScreen from "../components/payment/UpgradeScreen";
+import CheckoutScreen from "../components/payment/CheckoutScreen";
+import PaymentSuccessScreen from "../components/payment/PaymentSuccessScreen";
+import PaywallModal from "../components/payment/PaywallModal";
+import UpgradeBanner from "../components/payment/UpgradeBanner";
+import { usePaymentContext } from "../hooks/usePayment.js";
 
 export interface UserSelections {
   language: "english" | "spanish" | null;
@@ -43,6 +49,8 @@ interface ActiveLesson {
   module: Module;
 }
 
+type PaymentFlow = "none" | "upgrade" | "checkout" | "success";
+
 const initialSelections: UserSelections = {
   language: null,
   goals: [],
@@ -60,6 +68,16 @@ function Index() {
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [activeLesson, setActiveLesson] = useState<ActiveLesson | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("home");
+  
+  // Payment state
+  const [paymentFlow, setPaymentFlow] = useState<PaymentFlow>("none");
+  const [paywallOpen, setPaywallOpen] = useState(false);
+  const [paywallContentType, setPaywallContentType] = useState("lesson");
+  const [purchaseEmail, setPurchaseEmail] = useState("");
+  const [purchaseReceipt, setPurchaseReceipt] = useState("");
+  const [flashSale, setFlashSale] = useState(false);
+
+  const { isPro, completePurchase } = usePaymentContext();
 
   const updateSelections = (updates: Partial<UserSelections>) => {
     setSelections((prev) => ({ ...prev, ...updates }));
@@ -73,6 +91,12 @@ function Index() {
   };
 
   const handleLessonOpen = (lesson: Lesson, module: Module) => {
+    // Free users can only access first lesson as preview
+    if (!isPro && lesson.id !== "1.1") {
+      setPaywallContentType("lesson");
+      setPaywallOpen(true);
+      return;
+    }
     setActiveLesson({ lesson, module });
   };
 
@@ -81,17 +105,85 @@ function Index() {
   };
 
   const handleLessonComplete = () => {
-    // Mark lesson as complete (in a real app, this would update state/backend)
     console.log(`Lesson ${activeLesson?.lesson.id} completed!`);
   };
 
   const handleTabChange = (tab: TabId) => {
+    // Free users can only access home and settings fully
+    if (!isPro && (tab === "audio" || tab === "workbook")) {
+      setPaywallContentType(tab);
+      setPaywallOpen(true);
+      return;
+    }
+    
     setActiveTab(tab);
-    // Clear active lesson when switching tabs
     if (activeLesson) {
       setActiveLesson(null);
     }
   };
+
+  const handleUpgradeClick = () => {
+    setPaymentFlow("upgrade");
+    setPaywallOpen(false);
+  };
+
+  const handlePurchaseClick = () => {
+    setPaymentFlow("checkout");
+  };
+
+  const handleCheckoutComplete = async (email: string) => {
+    const result = await completePurchase(email);
+    if (result.success) {
+      setPurchaseEmail(email);
+      setPurchaseReceipt(result.receiptNumber);
+      setPaymentFlow("success");
+    }
+  };
+
+  const handlePaymentFlowClose = () => {
+    setPaymentFlow("none");
+  };
+
+  const handleSuccessContinue = () => {
+    setPaymentFlow("none");
+    setActiveTab("home");
+  };
+
+  // Show payment screens
+  if (paymentFlow === "upgrade") {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+        <UpgradeScreen
+          onPurchase={handlePurchaseClick}
+          onClose={handlePaymentFlowClose}
+          flashSale={flashSale}
+        />
+      </div>
+    );
+  }
+
+  if (paymentFlow === "checkout") {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+        <CheckoutScreen
+          onComplete={handleCheckoutComplete}
+          onBack={() => setPaymentFlow("upgrade")}
+        />
+      </div>
+    );
+  }
+
+  if (paymentFlow === "success") {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+        <PaymentSuccessScreen
+          email={purchaseEmail}
+          receiptNumber={purchaseReceipt}
+          onContinue={handleSuccessContinue}
+        />
+      </div>
+    );
+  }
 
   if (onboardingComplete) {
     // Show lesson page if a lesson is active
@@ -114,6 +206,12 @@ function Index() {
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
           <AudioPractice />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+          <PaywallModal
+            isOpen={paywallOpen}
+            onClose={() => setPaywallOpen(false)}
+            onUpgrade={handleUpgradeClick}
+            contentType={paywallContentType}
+          />
         </div>
       );
     }
@@ -124,6 +222,12 @@ function Index() {
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
           <Workbook />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+          <PaywallModal
+            isOpen={paywallOpen}
+            onClose={() => setPaywallOpen(false)}
+            onUpgrade={handleUpgradeClick}
+            contentType={paywallContentType}
+          />
         </div>
       );
     }
@@ -134,6 +238,12 @@ function Index() {
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
           <ProgressSection />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+          <PaywallModal
+            isOpen={paywallOpen}
+            onClose={() => setPaywallOpen(false)}
+            onUpgrade={handleUpgradeClick}
+            contentType={paywallContentType}
+          />
         </div>
       );
     }
@@ -142,7 +252,11 @@ function Index() {
     if (activeTab === "settings") {
       return (
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-          <SettingsSection />
+          <SettingsSection 
+            onUpgrade={handleUpgradeClick}
+            flashSale={flashSale}
+            onToggleFlashSale={() => setFlashSale(!flashSale)}
+          />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
       );
@@ -151,16 +265,36 @@ function Index() {
     // Show dashboard (home tab and others for now)
     return (
       <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-        <Dashboard 
-          selections={selections} 
-          onLessonOpen={handleLessonOpen} 
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
+        {/* Upgrade Banner for free users */}
+        {!isPro && (
+          <div className="fixed top-0 left-0 right-0 z-40 px-4 py-3 bg-[#0a0a0f]/95 backdrop-blur-sm border-b border-white/5">
+            <div className="max-w-lg mx-auto">
+              <UpgradeBanner onUpgrade={handleUpgradeClick} />
+            </div>
+          </div>
+        )}
+        
+        <div className={!isPro ? "pt-20" : ""}>
+          <Dashboard 
+            selections={selections} 
+            onLessonOpen={handleLessonOpen} 
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            isPro={isPro}
+          />
+        </div>
+        
+        <PaywallModal
+          isOpen={paywallOpen}
+          onClose={() => setPaywallOpen(false)}
+          onUpgrade={handleUpgradeClick}
+          contentType={paywallContentType}
         />
       </div>
     );
   }
 
+  // Onboarding screens - Screen 5 shows upgrade CTA for transformation
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
       {currentScreen === 1 && (
@@ -204,6 +338,7 @@ function Index() {
           onNext={goNext}
           onBack={goBack}
           currentScreen={currentScreen}
+          onUpgrade={handleUpgradeClick}
         />
       )}
       {currentScreen === 6 && (
