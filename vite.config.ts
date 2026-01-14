@@ -11,6 +11,8 @@ export default defineConfig({
 		alias: {
 			"@": path.resolve(__dirname, "./src/web"),
 		},
+	}, build: {
+		outDir: 'dist' ,
 	},
 	server: {
 		allowedHosts: true,
