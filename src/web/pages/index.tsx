@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import WelcomeScreen from "../components/onboarding/WelcomeScreen";
 import GoalSelectionScreen from "../components/onboarding/GoalSelectionScreen";
 import LevelAssessmentScreen from "../components/onboarding/LevelAssessmentScreen";
@@ -76,8 +76,23 @@ function Index() {
   const [purchaseEmail, setPurchaseEmail] = useState("");
   const [purchaseReceipt, setPurchaseReceipt] = useState("");
   const [flashSale, setFlashSale] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
 
-  const { isPro, isLiveMode, completePurchase, openExternalPayment } = usePaymentContext();
+  const { isPro, isLiveMode, completePurchase, openExternalPayment, paymentStatus } = usePaymentContext();
+
+  // Show success notification when user becomes Pro (e.g., from Stripe return)
+  useEffect(() => {
+    if (isPro && paymentStatus.purchaseDate) {
+      const purchaseTime = new Date(paymentStatus.purchaseDate).getTime();
+      const now = Date.now();
+      // Show success if purchased within the last 30 seconds (just returned from Stripe)
+      if (now - purchaseTime < 30000) {
+        setShowPaymentSuccess(true);
+        setOnboardingComplete(true); // Auto-complete onboarding
+        setTimeout(() => setShowPaymentSuccess(false), 5000);
+      }
+    }
+  }, [isPro, paymentStatus.purchaseDate]);
 
   const updateSelections = (updates: Partial<UserSelections>) => {
     setSelections((prev) => ({ ...prev, ...updates }));
@@ -274,6 +289,19 @@ function Index() {
     // Show dashboard (home tab and others for now)
     return (
       <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
+        {/* Payment Success Toast */}
+        {showPaymentSuccess && (
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl shadow-lg shadow-emerald-500/25 animate-bounce">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🎉</span>
+              <div>
+                <p className="text-white font-bold">Welcome to Pro!</p>
+                <p className="text-white/90 text-sm">Full access unlocked</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Upgrade Banner for free users */}
         {!isPro && (
           <div className="fixed top-0 left-0 right-0 z-40 px-4 py-3 bg-[#0a0a0f]/95 backdrop-blur-sm border-b border-white/5">

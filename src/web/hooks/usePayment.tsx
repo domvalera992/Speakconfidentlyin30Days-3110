@@ -70,13 +70,21 @@ const getStoredPaymentConfig = (): PaymentConfig => {
 
 const savePaymentStatus = (status: PaymentStatus) => {
   if (typeof window !== "undefined") {
-    localStorage.setItem(PAYMENT_STORAGE_KEY, JSON.stringify(status));
+    try {
+      localStorage.setItem(PAYMENT_STORAGE_KEY, JSON.stringify(status));
+    } catch (e) {
+      console.error("Error saving payment status:", e);
+    }
   }
 };
 
 const savePaymentConfig = (config: PaymentConfig) => {
   if (typeof window !== "undefined") {
-    localStorage.setItem(PAYMENT_CONFIG_KEY, JSON.stringify(config));
+    try {
+      localStorage.setItem(PAYMENT_CONFIG_KEY, JSON.stringify(config));
+    } catch (e) {
+      console.error("Error saving payment config:", e);
+    }
   }
 };
 
@@ -86,14 +94,58 @@ const generateReceiptNumber = () => {
   return `SL${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${random}`;
 };
 
+// Check for payment success URL parameter
+const checkPaymentReturn = (): { success: boolean; sessionId?: string } => {
+  if (typeof window === "undefined") return { success: false };
+  
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get("payment");
+    const sessionId = params.get("session_id");
+    
+    if (paymentStatus === "success") {
+      // Clean URL after reading parameters
+      const url = new URL(window.location.href);
+      url.searchParams.delete("payment");
+      url.searchParams.delete("session_id");
+      window.history.replaceState({}, "", url.pathname);
+      
+      return { success: true, sessionId: sessionId || undefined };
+    }
+  } catch (e) {
+    console.error("Error checking payment return:", e);
+  }
+  
+  return { success: false };
+};
+
 export function usePayment(): PaymentContextType {
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(defaultPaymentStatus);
   const [paymentConfig, setPaymentConfig] = useState<PaymentConfig>(defaultPaymentConfig);
+  const [paymentReturnHandled, setPaymentReturnHandled] = useState(false);
 
   useEffect(() => {
     setPaymentStatus(getStoredPaymentStatus());
     setPaymentConfig(getStoredPaymentConfig());
-  }, []);
+    
+    // Check for payment return on mount
+    if (!paymentReturnHandled) {
+      const returnStatus = checkPaymentReturn();
+      if (returnStatus.success) {
+        // User returned from successful Stripe payment
+        const receiptNumber = generateReceiptNumber();
+        const newStatus: PaymentStatus = {
+          isPro: true,
+          purchaseDate: new Date().toISOString(),
+          receiptNumber,
+          email: null, // Email not available from redirect
+        };
+        setPaymentStatus(newStatus);
+        savePaymentStatus(newStatus);
+      }
+      setPaymentReturnHandled(true);
+    }
+  }, [paymentReturnHandled]);
 
   useEffect(() => {
     savePaymentStatus(paymentStatus);

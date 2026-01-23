@@ -40,6 +40,17 @@ export default function UpgradeScreen({ onPurchase, onClose, flashSale = false }
   const [mounted, setMounted] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [countdown, setCountdown] = useState({ hours: 23, minutes: 59, seconds: 47 });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handlePurchaseClick = () => {
+    setIsLoading(true);
+    // Brief delay to show loading state before redirect
+    setTimeout(() => {
+      onPurchase();
+      // Reset after 3s in case redirect doesn't happen
+      setTimeout(() => setIsLoading(false), 3000);
+    }, 200);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -149,10 +160,18 @@ export default function UpgradeScreen({ onPurchase, onClose, flashSale = false }
 
             {/* CTA Button */}
             <button
-              onClick={onPurchase}
-              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg hover:opacity-90 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-500/25"
+              onClick={handlePurchaseClick}
+              disabled={isLoading}
+              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg hover:opacity-90 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-500/25 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              Get Full Access Now
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Processing...
+                </span>
+              ) : (
+                "Get Full Access Now"
+              )}
             </button>
 
             {/* Flash sale bonus */}
@@ -255,10 +274,18 @@ export default function UpgradeScreen({ onPurchase, onClose, flashSale = false }
 
         {/* Final CTA */}
         <button
-          onClick={onPurchase}
-          className={`w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg hover:opacity-90 transition-all duration-700 delay-700 hover:scale-[1.02] active:scale-[0.98] ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          onClick={handlePurchaseClick}
+          disabled={isLoading}
+          className={`w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg hover:opacity-90 transition-all duration-700 delay-700 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
         >
-          Get Lifetime Access Now
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Processing...
+            </span>
+          ) : (
+            "Get Lifetime Access Now"
+          )}
         </button>
       </div>
     </div>
