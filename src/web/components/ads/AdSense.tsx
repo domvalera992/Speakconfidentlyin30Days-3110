@@ -14,10 +14,9 @@ interface AdSenseProps {
   style?: React.CSSProperties;
 }
 
-// Set this to true once you have configured your AdSense account
-const ADSENSE_ENABLED = false;
-// Replace with your actual publisher ID from Google AdSense
-const PUBLISHER_ID = "ca-pub-YOUR_PUBLISHER_ID";
+// AdSense is now enabled with your publisher ID
+const ADSENSE_ENABLED = true;
+const PUBLISHER_ID = "ca-pub-4666962457028427";
 
 export default function AdSense({
   adSlot,
