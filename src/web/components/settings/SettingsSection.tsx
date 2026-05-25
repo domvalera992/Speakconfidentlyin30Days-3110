@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { usePaymentContext } from "../../hooks/usePayment.js";
 
 interface ReminderSettings {
   enabled: boolean;
@@ -34,14 +33,12 @@ const TIME_OPTIONS = [
   { value: "21:00", label: "9:00 PM" },
 ];
 
-export default function SettingsSection({ onUpgrade, flashSale = false, onToggleFlashSale }: SettingsSectionProps) {
+export default function SettingsSection({ }: SettingsSectionProps) {
   const [mounted, setMounted] = useState(false);
   const [settings, setSettings] = useState<ReminderSettings>(DEFAULT_SETTINGS);
   const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | "unsupported">("default");
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  
-  const { isPro, paymentStatus, paymentConfig, toggleDemoMode, setPaymentMode, setExternalPaymentUrl, isLiveMode } = usePaymentContext();
 
   useEffect(() => {
     setMounted(true);
@@ -65,9 +62,9 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
     
     if (permission === "granted") {
       setShowPermissionModal(false);
-      new Notification("Daily Reminders Enabled! 🎉", {
+      new Notification("Daily Reminders Enabled!", {
         body: "You'll receive your daily learning reminders at your chosen time.",
-        icon: "🗣️",
+        icon: "/favicon.ico",
       });
     }
   };
@@ -86,15 +83,6 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
     }
   };
 
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white pb-24">
       {/* Permission Request Modal */}
@@ -103,7 +91,9 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
           <div className="bg-[#0f0f15] rounded-3xl p-6 max-w-sm w-full border border-white/10">
             <div className="text-center">
               <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-4">
-                <span className="text-4xl">🔔</span>
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Enable Notifications</h3>
               <p className="text-white/60 text-sm mb-6">
@@ -150,64 +140,59 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
       <div className="relative z-10 px-5 py-6 max-w-lg mx-auto">
         {/* Header */}
         <div className={`mb-6 transition-all duration-700 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">
-            ⚙️ Settings
+          <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Settings
           </h1>
           <p className="text-white/50 text-sm mt-1">Customize your learning experience</p>
         </div>
 
-        {/* Account Status Section */}
-        <div className={`bg-gradient-to-br ${isPro ? "from-emerald-500/20 to-teal-500/20 border-emerald-400/30" : "from-white/5 to-white/5 border-white/10"} rounded-3xl border overflow-hidden mb-6 transition-all duration-700 delay-50 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        {/* Account Status Section - Free with Ads */}
+        <div className={`bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border-emerald-400/30 rounded-3xl border overflow-hidden mb-6 transition-all duration-700 delay-50 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-xl ${isPro ? "bg-gradient-to-br from-emerald-500 to-teal-500" : "bg-white/10"} flex items-center justify-center`}>
-                  <span className="text-2xl">{isPro ? "⭐" : "👤"}</span>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <h2 className="text-lg font-bold text-white">Account Status</h2>
-                    {isPro && (
-                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-xs font-bold">
-                        PRO
-                      </span>
-                    )}
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-xs font-bold">
+                      FREE
+                    </span>
                   </div>
                   <p className="text-white/50 text-sm">
-                    {isPro ? "Full access unlocked" : "Free account"}
+                    Full access - ad supported
                   </p>
                 </div>
               </div>
             </div>
 
-            {isPro ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-white/60 text-sm">Purchase Date</span>
-                  <span className="text-white text-sm">{formatDate(paymentStatus.purchaseDate)}</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-white/60 text-sm">Receipt Number</span>
-                  <span className="text-white text-sm font-mono">{paymentStatus.receiptNumber}</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-white/60 text-sm">Access</span>
-                  <span className="text-emerald-400 text-sm font-medium">Lifetime</span>
-                </div>
-                <div className="pt-3 border-t border-white/10">
-                  <p className="text-white/40 text-xs">
-                    Need help? Contact us at support@speakconfidently.app
-                  </p>
-                </div>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-2">
+                <span className="text-white/60 text-sm">Content Access</span>
+                <span className="text-emerald-400 text-sm font-medium">Full Access</span>
               </div>
-            ) : (
-              <button
-                onClick={onUpgrade}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold hover:opacity-90 transition-opacity"
-              >
-                Get Lifetime Access • $34.99
-              </button>
-            )}
+              <div className="flex items-center justify-between py-2">
+                <span className="text-white/60 text-sm">Modules</span>
+                <span className="text-emerald-400 text-sm font-medium">All Unlocked</span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-white/60 text-sm">Audio Library</span>
+                <span className="text-emerald-400 text-sm font-medium">250+ Phrases</span>
+              </div>
+              <div className="pt-3 border-t border-white/10">
+                <p className="text-white/40 text-xs">
+                  This app is free and supported by ads. Thank you for using SpeakUp!
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -215,7 +200,10 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
         <div className={`bg-white/5 rounded-3xl border border-white/10 overflow-hidden mb-6 transition-all duration-700 delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="p-5 border-b border-white/5">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <span>🔔</span> Daily Reminders
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              Daily Reminders
             </h2>
             <p className="text-white/50 text-sm mt-1">
               Get notified to keep your streak alive
@@ -272,7 +260,7 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
                   <div>
                     <p className="text-white font-medium">Streak warning</p>
                     <p className="text-white/40 text-xs mt-0.5">
-                      Extra reminder if you haven't practiced by evening
+                      Extra reminder if you haven&apos;t practiced by evening
                     </p>
                   </div>
                   <button
@@ -320,13 +308,15 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
           <div className={`bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-2xl p-4 border border-amber-400/30 mb-6 transition-all duration-700 delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-                <span className="text-xl">📱</span>
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
               </div>
               <div>
                 <p className="text-white/80 text-xs uppercase tracking-wider mb-1">Preview</p>
-                <p className="text-white font-bold text-sm">Time to learn! 🗣️</p>
+                <p className="text-white font-bold text-sm">Time to learn!</p>
                 <p className="text-white/70 text-xs mt-1">
-                  🔥 7 day streak! Don't break it now. Just 5 minutes of practice keeps your momentum going.
+                  7 day streak! Don&apos;t break it now. Just 5 minutes of practice keeps your momentum going.
                 </p>
               </div>
             </div>
@@ -337,7 +327,10 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
         <div className={`bg-white/5 rounded-3xl border border-white/10 overflow-hidden mb-6 transition-all duration-700 delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="p-5 border-b border-white/5">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <span>👤</span> Account
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              Account
             </h2>
           </div>
 
@@ -369,168 +362,43 @@ export default function SettingsSection({ onUpgrade, flashSale = false, onToggle
           </div>
         </div>
 
-        {/* Payment Configuration Section */}
-        <div className={`bg-gradient-to-br from-indigo-500/10 to-blue-500/10 rounded-3xl border border-indigo-400/20 overflow-hidden mb-6 transition-all duration-700 delay-350 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">💳</span>
-              <h2 className="text-lg font-bold text-white">Payment Settings</h2>
-            </div>
-            <p className="text-white/50 text-sm mb-4">
-              Configure how purchases are handled in the app.
-            </p>
-            
-            <div className="space-y-4">
-              {/* Payment Mode Toggle */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white font-medium">Live Mode</p>
-                  <p className="text-white/40 text-xs mt-0.5">
-                    {isLiveMode ? "External payment link active" : "Using demo checkout"}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setPaymentMode(paymentConfig.mode === "live" ? "demo" : "live")}
-                  className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
-                    paymentConfig.mode === "live" ? "bg-emerald-500" : "bg-white/20"
-                  }`}
-                >
-                  <div
-                    className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
-                      paymentConfig.mode === "live" ? "translate-x-6" : "translate-x-0"
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* External Payment URL */}
-              <div className="pt-4 border-t border-white/5">
-                <label className="block">
-                  <p className="text-white font-medium mb-1">External Payment Link</p>
-                  <p className="text-white/40 text-xs mb-3">
-                    Paste your Stripe Payment Link, Gumroad, or other checkout URL
-                  </p>
-                  <input
-                    type="url"
-                    value={paymentConfig.externalPaymentUrl}
-                    onChange={(e) => setExternalPaymentUrl(e.target.value)}
-                    placeholder="https://buy.stripe.com/..."
-                    className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-indigo-500/50 transition-colors font-mono text-sm"
-                  />
-                </label>
-                {paymentConfig.mode === "live" && !paymentConfig.externalPaymentUrl.trim() && (
-                  <p className="text-amber-400 text-xs mt-2 flex items-center gap-1">
-                    <span>⚠️</span> Add a payment link to enable live mode
-                  </p>
-                )}
-              </div>
-
-              {/* Status indicator */}
-              <div className="pt-4 border-t border-white/5">
-                <div className={`flex items-center gap-2 p-3 rounded-xl ${isLiveMode ? "bg-emerald-500/20 border border-emerald-400/30" : "bg-white/5 border border-white/10"}`}>
-                  <span className={`w-2 h-2 rounded-full ${isLiveMode ? "bg-emerald-400 animate-pulse" : "bg-white/40"}`} />
-                  <span className={`text-sm font-medium ${isLiveMode ? "text-emerald-300" : "text-white/60"}`}>
-                    {isLiveMode ? "Live: Purchases open external link" : "Demo: Simulated checkout flow"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Demo Mode Section */}
-        <div className={`bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-3xl border border-purple-400/20 overflow-hidden mb-6 transition-all duration-700 delay-400 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🧪</span>
-              <h2 className="text-lg font-bold text-white">Demo Controls</h2>
-            </div>
-            <p className="text-white/50 text-sm mb-4">
-              Toggle between free and paid user views for testing purposes.
-            </p>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-white font-medium">Pro Mode</p>
-                  <p className="text-white/40 text-xs mt-0.5">
-                    Switch between free and paid views
-                  </p>
-                </div>
-                <button
-                  onClick={toggleDemoMode}
-                  className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
-                    isPro ? "bg-emerald-500" : "bg-white/20"
-                  }`}
-                >
-                  <div
-                    className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
-                      isPro ? "translate-x-6" : "translate-x-0"
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {onToggleFlashSale && (
-                <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                  <div>
-                    <p className="text-white font-medium">Flash Sale Mode</p>
-                    <p className="text-white/40 text-xs mt-0.5">
-                      Show countdown timer and bonuses
-                    </p>
-                  </div>
-                  <button
-                    onClick={onToggleFlashSale}
-                    className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${
-                      flashSale ? "bg-orange-500" : "bg-white/20"
-                    }`}
-                  >
-                    <div
-                      className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
-                        flashSale ? "translate-x-6" : "translate-x-0"
-                      }`}
-                    />
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Support Section */}
-        <div className={`bg-white/5 rounded-3xl border border-white/10 overflow-hidden transition-all duration-700 delay-400 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        {/* About Section */}
+        <div className={`bg-white/5 rounded-3xl border border-white/10 overflow-hidden mb-6 transition-all duration-700 delay-400 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="p-5 border-b border-white/5">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <span>💬</span> Support
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              About
             </h2>
           </div>
 
           <div className="divide-y divide-white/5">
             <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
-              <span className="text-white/80">Help Center</span>
-              <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
-              <span className="text-white/80">Contact Us</span>
-              <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
               <span className="text-white/80">Privacy Policy</span>
               <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </button>
+            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+              <span className="text-white/80">Terms of Service</span>
+              <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </button>
+            <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors">
+              <span className="text-white/80">Contact Support</span>
+              <svg className="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <div className="p-4">
+              <p className="text-white/30 text-sm text-center">
+                SpeakUp v1.0.0
+              </p>
+            </div>
           </div>
         </div>
-
-        {/* Version */}
-        <p className={`text-center text-white/30 text-sm mt-8 transition-all duration-700 delay-500 ${mounted ? "opacity-100" : "opacity-0"}`}>
-          Version 1.0.0
-        </p>
       </div>
     </div>
   );
