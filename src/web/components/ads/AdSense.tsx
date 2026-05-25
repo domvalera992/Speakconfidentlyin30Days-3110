@@ -14,6 +14,11 @@ interface AdSenseProps {
   style?: React.CSSProperties;
 }
 
+// Set this to true once you have configured your AdSense account
+const ADSENSE_ENABLED = false;
+// Replace with your actual publisher ID from Google AdSense
+const PUBLISHER_ID = "ca-pub-YOUR_PUBLISHER_ID";
+
 export default function AdSense({
   adSlot,
   adFormat = "auto",
@@ -25,8 +30,8 @@ export default function AdSense({
   const isAdLoaded = useRef(false);
 
   useEffect(() => {
-    // Only load ad once
-    if (isAdLoaded.current) return;
+    // Skip if AdSense is not enabled or already loaded
+    if (!ADSENSE_ENABLED || isAdLoaded.current) return;
 
     try {
       // Check if adsbygoogle is available
@@ -39,6 +44,20 @@ export default function AdSense({
     }
   }, []);
 
+  // Show placeholder when AdSense is not configured
+  if (!ADSENSE_ENABLED) {
+    return (
+      <div className={`ad-container ${className}`} style={style}>
+        <div 
+          className="flex items-center justify-center bg-white/5 border border-white/10 rounded-lg text-white/40 text-xs"
+          style={{ minHeight: "90px", ...style }}
+        >
+          Ad Space - Configure AdSense to display ads
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={adRef} className={`ad-container ${className}`} style={style}>
       <ins
@@ -47,7 +66,7 @@ export default function AdSense({
           display: "block",
           ...style,
         }}
-        data-ad-client="ca-pub-XXXXXXXXXX" // Replace with your AdSense publisher ID
+        data-ad-client={PUBLISHER_ID}
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
         data-full-width-responsive={fullWidthResponsive.toString()}
