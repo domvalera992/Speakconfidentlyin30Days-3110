@@ -12,7 +12,6 @@ import Workbook from "../components/workbook/Workbook";
 import ProgressSection from "../components/progress/ProgressSection";
 import SettingsSection from "../components/settings/SettingsSection";
 import BottomNav, { type TabId } from "../components/dashboard/BottomNav";
-import { AdBanner } from "../components/ads/AdSense";
 
 export interface UserSelections {
   language: "english" | "spanish" | null;
@@ -105,10 +104,6 @@ function Index() {
             onBack={handleLessonClose}
             onComplete={handleLessonComplete}
           />
-          {/* Ad banner at bottom of lesson */}
-          <div className="fixed bottom-16 left-0 right-0 z-30">
-            <AdBanner />
-          </div>
         </div>
       );
     }
@@ -117,11 +112,7 @@ function Index() {
     if (activeTab === "audio") {
       return (
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-          {/* Ad banner at top */}
-          <AdBanner className="fixed top-0 left-0 right-0 z-40 border-b border-white/5" />
-          <div className="pt-24">
-            <AudioPractice />
-          </div>
+          <AudioPractice />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
       );
@@ -131,11 +122,7 @@ function Index() {
     if (activeTab === "workbook") {
       return (
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-          {/* Ad banner at top */}
-          <AdBanner className="fixed top-0 left-0 right-0 z-40 border-b border-white/5" />
-          <div className="pt-24">
-            <Workbook />
-          </div>
+          <Workbook />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
       );
@@ -145,11 +132,7 @@ function Index() {
     if (activeTab === "progress") {
       return (
         <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-          {/* Ad banner at top */}
-          <AdBanner className="fixed top-0 left-0 right-0 z-40 border-b border-white/5" />
-          <div className="pt-24">
-            <ProgressSection />
-          </div>
+          <ProgressSection />
           <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
       );
@@ -172,18 +155,13 @@ function Index() {
     // Show dashboard (home tab)
     return (
       <div className="min-h-screen bg-[#0a0a0f] text-white overflow-hidden">
-        {/* Ad banner at top */}
-        <AdBanner className="fixed top-0 left-0 right-0 z-40 border-b border-white/5" />
-        
-        <div className="pt-24">
-          <Dashboard 
-            selections={selections} 
-            onLessonOpen={handleLessonOpen} 
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            isPro={true}
-          />
-        </div>
+        <Dashboard 
+          selections={selections} 
+          onLessonOpen={handleLessonOpen} 
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          isPro={true}
+        />
       </div>
     );
   }
