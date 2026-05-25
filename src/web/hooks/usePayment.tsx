@@ -29,7 +29,7 @@ interface PaymentContextType {
 }
 
 const defaultPaymentStatus: PaymentStatus = {
-  isPro: false,
+  isPro: true, // Site is now free to use
   purchaseDate: null,
   receiptNumber: null,
   email: null,
@@ -41,16 +41,7 @@ const defaultPaymentConfig: PaymentConfig = {
 };
 
 const getStoredPaymentStatus = (): PaymentStatus => {
-  if (typeof window === "undefined") return defaultPaymentStatus;
-  
-  try {
-    const stored = localStorage.getItem(PAYMENT_STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (e) {
-    console.error("Error loading payment status:", e);
-  }
+  // Site is now free - always return pro status
   return defaultPaymentStatus;
 };
 
