@@ -29,7 +29,7 @@ interface PaymentContextType {
 }
 
 const defaultPaymentStatus: PaymentStatus = {
-  isPro: false,
+  isPro: true, // Site is now free - all content unlocked
   purchaseDate: null,
   receiptNumber: null,
   email: null,

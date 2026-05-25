@@ -58,9 +58,8 @@ const modules: Module[] = [
     subtitle: "Speak without fear",
     days: "Day 11-15",
     icon: "💪",
-    unlocked: false,
+    unlocked: true,
     color: "violet",
-    unlockRequirement: "Complete Module 2 to unlock",
     lessons: [
       { id: "3.1", title: "Overcoming Speaking Fear", completed: false, type: "lesson" },
       { id: "3.2", title: "The Confidence Loop Method", completed: false, type: "lesson" },
@@ -74,9 +73,8 @@ const modules: Module[] = [
     subtitle: "Natural dialogue mastery",
     days: "Day 16-30",
     icon: "🗣️",
-    unlocked: false,
+    unlocked: true,
     color: "rose",
-    unlockRequirement: "Complete Module 3 to unlock",
     lessons: [
       { id: "4.1", title: "Meeting People", completed: false, type: "lesson" },
       { id: "4.2", title: "Asking Questions Naturally", completed: false, type: "lesson" },
@@ -91,9 +89,8 @@ const modules: Module[] = [
     subtitle: "Bonus content",
     days: "BONUS",
     icon: "⭐",
-    unlocked: false,
+    unlocked: true,
     color: "amber",
-    unlockRequirement: "Complete all modules to unlock",
     lessons: [
       { id: "5.1", title: "Phone Calls", completed: false, type: "lesson" },
       { id: "5.2", title: "Workplace Basics", completed: false, type: "lesson" },
